@@ -1,4 +1,4 @@
-from ttacc.lib.aws.region import Region
+from ttacc.lib.provider import Region
 
 REGIONS = [
     Region(
