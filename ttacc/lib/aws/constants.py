@@ -1,25 +1,26 @@
 from ttacc.lib.provider import Region
+from ttacc.lib.provider.model import Regions
 
-REGIONS = [
+REGIONS = Regions([
     Region(
         name='us-east-1',
         display_name='US East (N. Virginia)',
-        emission_factor=0.0001
+        emission_factor=0.000379069
     ),
     Region(
         name='us-east-2',
         display_name='US East (Ohio)',
-        emission_factor=0.0
+        emission_factor=0.000410608
     ),
     Region(
         name='us-west-1',
         display_name='US West (N. California)',
-        emission_factor=0.0
+        emission_factor=0.000322167
     ),
     Region(
         name='us-west-2',
         display_name='US West (Oregon)',
-        emission_factor=0.0
+        emission_factor=0.000322167
     ),
     Region(
         name='af-south-1',
@@ -126,4 +127,4 @@ REGIONS = [
         display_name='South America (Sao Paulo)',
         emission_factor=0.0000617,
     ),
-]
+])

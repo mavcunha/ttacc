@@ -1,42 +1,34 @@
-import os
-import logging
 import click
+import os
+from ttacc.lib.utils import log
 
-PROJECT_FOLDER = os.path.dirname(__file__)
-COMMANDS_FOLDER = os.path.join(PROJECT_FOLDER, 'tools')
+plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
 
-LOGLEVEL = os.environ.get('TTACC_LOGLEVEL', 'WARNING').upper()
-logging.basicConfig(level=LOGLEVEL)
-log = logging.getLogger(__name__)
+log.set('ttacc')
 
-
-# https://click.palletsprojects.com/en/8.1.x/commands/#custom-multi-commands
 class MyCLI(click.MultiCommand):
 
     def list_commands(self, ctx):
+        log.info('list commands')
         rv = []
-        for filename in os.listdir(COMMANDS_FOLDER):
-            if not filename.startswith('.') and filename.endswith('.py'):
-                log.debug(f'found command {filename}')
+        for filename in os.listdir(plugin_folder):
+            log.debug(f'{filename=}')
+            if filename.endswith('.py') and filename != '__init__.py':
                 rv.append(filename[:-3])
+                log.debug(f'{rv=}')
         rv.sort()
         return rv
 
     def get_command(self, ctx, name):
         ns = {}
-        fn = os.path.join(COMMANDS_FOLDER, name + '.py')
-        if os.path.exists(fn):
-            with open(fn) as f:
-                log.debug(f'loading command {fn=!r}')
-                code = compile(f.read(), fn, 'exec')
+        fn = os.path.join(plugin_folder, name + '.py')
+        with open(fn) as f:
+            code = compile(f.read(), fn, 'exec')
             eval(code, ns, ns)
-            return ns['cli']
-        else:
-            click.secho(f'ERR: {fn} not found', err=True, bold=True, fg='red')
-            click.echo(ctx.get_help())
-            ctx.exit()
+        return ns['cli']
 
+cli = MyCLI(help='This tool\'s subcommands are loaded from a '
+            'plugin folder dynamically.')
 
-@click.command(cls=MyCLI)
-def cli():
-    pass
+if __name__ == '__main__':
+    cli()
